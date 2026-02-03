@@ -1,0 +1,37 @@
+mode: ContinuousDeployment
+branches:
+  main:
+    regex: ^main$
+    mode: ContinuousDeployment
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    source-branches: ['feature', 'fix', 'hotfix']
+  feature:
+    regex: ^feature[/-]
+    mode: ContinuousDeployment
+    tag: alpha
+    increment: Minor
+    source-branches: ['main']
+  fix:
+    regex: ^fix[/-]
+    mode: ContinuousDeployment
+    tag: beta
+    increment: Patch
+    source-branches: ['main']
+  hotfix:
+    regex: ^hotfix[/-]
+    mode: ContinuousDeployment
+    tag: beta
+    increment: Patch
+    source-branches: ['main']
+  release:
+    regex: ^release[/-]
+    mode: ContinuousDeployment
+    tag: rc
+    increment: None
+    source-branches: ['main', 'feature']
+ignore:
+  sha: []
+merge-message-formats: {}

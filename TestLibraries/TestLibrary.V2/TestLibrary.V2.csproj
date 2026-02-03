@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>TestLibrary</PackageId>
+    <Version>2.0.0</Version>
+    <Title>Test Library</Title>
+    <Authors>Test Author</Authors>
+    <Description>Test library version 2.0.0 for testing the NuGet Cache MCP Server. Contains breaking changes from 1.0.0 for testing version comparison features.</Description>
+    <PackageProjectUrl>https://github.com/example/testlibrary</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>test library mcp</PackageTags>
+
+    <!-- Output the DLL as TestLibrary.dll instead of TestLibrary.V2.dll -->
+    <AssemblyName>TestLibrary</AssemblyName>
+  </PropertyGroup>
+
+</Project>

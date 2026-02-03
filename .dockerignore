@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vs
+.vscode
+.idea
+*.user
+*.suo
+
+# Build outputs
+**/bin/
+**/obj/
+**/publish/
+
+# Test projects
+NugetCacheMcpServer.Tests/
+NugetCacheMcpServer.Cli/
+TestLibraries/
+MyTestProject/
+
+# Documentation
+*.md
+LICENSE
+
+# CI/CD
+.github/

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>TestLibrary.MetaPackage</PackageId>
+    <Version>1.0.0</Version>
+    <Title>Test Library Meta Package</Title>
+    <Authors>Test Author</Authors>
+    <Description>A meta-package that contains no code, only dependencies. Used for testing meta-package detection.</Description>
+    <PackageProjectUrl>https://github.com/example/testlibrary</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>test metapackage</PackageTags>
+
+    <!-- Make this a meta-package: exclude build output (no DLLs) -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <!-- Reference TestLibrary as a dependency (will be included in nuspec) -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

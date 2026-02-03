@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NugetCacheMcpServer.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\.nuget\\packages"
+    }
+  }
+}

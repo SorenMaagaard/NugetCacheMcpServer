@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NugetCacheMcpServer\NugetCacheMcpServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TUnit" Version="1.12.125" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Build test packages before running tests -->
+  <Target Name="BuildTestPackages" BeforeTargets="Build" Condition="!Exists('$(MSBuildThisFileDirectory)..\TestLibraries\test-packages\testlibrary\1.0.0\lib\net10.0\TestLibrary.dll')">
+    <Message Importance="High" Text="Building test packages..." />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\TestLibraries\build-test-packages.ps1&quot;" />
+  </Target>
+
+</Project>
