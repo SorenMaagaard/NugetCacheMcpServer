@@ -5,8 +5,6 @@ branches:
     mode: ContinuousDeployment
     label: ''
     increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
     source-branches: ['feature', 'fix', 'hotfix']
   feature:
     regex: ^feature[/-]
@@ -34,4 +32,3 @@ branches:
     source-branches: ['main', 'feature']
 ignore:
   sha: []
-merge-message-formats: {}
