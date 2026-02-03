@@ -12,18 +12,26 @@ public partial class XmlDocumentationParser : IXmlDocumentationParser
 {
     private readonly ILogger<XmlDocumentationParser> _logger;
     private readonly Dictionary<string, XElement> _members = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Lock _lock = new();
 
     public XmlDocumentationParser(ILogger<XmlDocumentationParser> logger)
     {
         _logger = logger;
     }
 
-    public bool IsLoaded => _members.Count > 0;
+    public bool IsLoaded
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _members.Count > 0;
+            }
+        }
+    }
 
     public void LoadDocumentation(string xmlPath)
     {
-        Clear();
-
         if (!File.Exists(xmlPath))
         {
             _logger.LogDebug("XML documentation file not found: {Path}", xmlPath);
@@ -35,12 +43,16 @@ public partial class XmlDocumentationParser : IXmlDocumentationParser
             var doc = XDocument.Load(xmlPath);
             var members = doc.Descendants("member");
 
-            foreach (var member in members)
+            lock (_lock)
             {
-                var name = member.Attribute("name")?.Value;
-                if (!string.IsNullOrEmpty(name))
+                _members.Clear();
+                foreach (var member in members)
                 {
-                    _members[name] = member;
+                    var name = member.Attribute("name")?.Value;
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        _members[name] = member;
+                    }
                 }
             }
 
@@ -81,9 +93,13 @@ public partial class XmlDocumentationParser : IXmlDocumentationParser
         // Find all matching methods (both generic and non-generic)
         // Pattern: M:{typeName}.{methodName} followed by optional `N and optional (params)
         var methodPrefix = $"M:{fullTypeName}.{methodName}";
-        var candidates = _members.Keys
-            .Where(k => k.StartsWith(methodPrefix, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        List<string> candidates;
+        lock (_lock)
+        {
+            candidates = _members.Keys
+                .Where(k => k.StartsWith(methodPrefix, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
 
         if (candidates.Count == 0)
             return null;
@@ -155,13 +171,20 @@ public partial class XmlDocumentationParser : IXmlDocumentationParser
 
     public void Clear()
     {
-        _members.Clear();
+        lock (_lock)
+        {
+            _members.Clear();
+        }
     }
 
     private MemberDocumentation? GetDocumentation(string key)
     {
-        if (!_members.TryGetValue(key, out var element))
-            return null;
+        XElement? element;
+        lock (_lock)
+        {
+            if (!_members.TryGetValue(key, out element))
+                return null;
+        }
 
         var doc = new MemberDocumentation
         {
