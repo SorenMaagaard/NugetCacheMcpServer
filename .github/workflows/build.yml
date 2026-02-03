@@ -182,11 +182,6 @@ jobs:
           name: nuget-cache-mcp-server-linux-x64-${{ needs.version.outputs.semver }}
           path: ./artifacts/linux-x64
 
-      - name: Create Archives
-        run: |
-          cd ./artifacts/win-x64 && zip -r ../../nuget-cache-mcp-server-win-x64.zip . && cd ../..
-          cd ./artifacts/linux-x64 && tar -czvf ../../nuget-cache-mcp-server-linux-x64.tar.gz . && cd ../..
-
       - name: Publish Release
         uses: release-drafter/release-drafter@v6
         id: release
@@ -199,8 +194,8 @@ jobs:
       - name: Upload Release Assets
         run: |
           gh release upload "${{ steps.release.outputs.tag_name }}" \
-            nuget-cache-mcp-server-win-x64.zip \
-            nuget-cache-mcp-server-linux-x64.tar.gz \
+            ./artifacts/win-x64/NugetCacheMcpServer.exe \
+            ./artifacts/linux-x64/NugetCacheMcpServer \
             --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
