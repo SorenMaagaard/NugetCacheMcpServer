@@ -1,7 +1,12 @@
 # NuGet Cache MCP Server
 
-A Model Context Protocol (MCP) server that provides AI assistants with tools to explore and analyze NuGet packages from your local cache.
+[![Install in VS Code](https://img.shields.io/badge/Install_MCP_with_docker-VS_Code-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=nuget-cache&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-v%22%2C%22~%2F.nuget%2Fpackages%3A%2Fnuget-cache%22%2C%22-e%22%2C%22NUGET_CACHE_PATH%22%2C%22ghcr.io%2Fsorenmaagaard%2Fnugetcachemcp%3Alatest%22%5D%2C%22env%22%3A%7B%22NUGET_CACHE_PATH%22%3A%22%2Fnuget-cache%22%7D%7D)
+[![Install in VS Code](https://img.shields.io/badge/Install_MCP_with_dnx-VS_Code-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=nuget-cache&config=%7B%22command%22%3A%22dnx%22%2C%22args%22%3A%5B%22Maagaard.NuGetCacheMcp%22%2C%22--yes%22%5D%2C%22env%22%3A%7B%7D%7D)
 
+[![Install in Visual Studio](https://img.shields.io/badge/Install_MCP_with_docker-Visual_Studio-C16FDE?style=flat-square&logo=visualstudio&logoColor=white)](https://vs-open.link/mcp-install?%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-v%22%2C%22~%2F.nuget%2Fpackages%3A%2Fnuget-cache%22%2C%22-e%22%2C%22NUGET_CACHE_PATH%22%2C%22ghcr.io%2Fsorenmaagaard%2Fnugetcachemcp%3Alatest%22%5D%2C%22env%22%3A%7B%22NUGET_CACHE_PATH%22%3A%22%2Fnuget-cache%22%7D%7D)
+[![Install in Visual Studio](https://img.shields.io/badge/Install_MCP_with_dnx-Visual_Studio-C16FDE?style=flat-square&logo=visualstudio&logoColor=white)](https://vs-open.link/mcp-install?%7B%22command%22%3A%22dnx%22%2C%22args%22%3A%5B%22Maagaard.NuGetCacheMcp%22%2C%22--yes%22%5D%2C%22env%22%3A%7B%7D%7D)
+
+![NuGet Version](https://img.shields.io/nuget/v/Maagaard.NuGetCacheMcp) 
 ## Features
 
 - **Package Discovery**: List and search cached NuGet packages
@@ -12,48 +17,61 @@ A Model Context Protocol (MCP) server that provides AI assistants with tools to 
 
 ## Installation
 
-### Using Docker
-
-```bash
-docker pull ghcr.io/sorenmaagaard/nugetcachemcp:latest
-```
-
-### Download Binary
-
-Download the latest release from the [Releases](../../releases) page:
-- `NuGetCacheMcp.exe` - Windows x64
-- `NuGetCacheMcp` - Linux x64
-
-### Build from Source
-
-Requires .NET 10 SDK.
-
-```bash
-# Clone the repository
-git clone https://github.com/SorenMaagaard/NugetCacheMcp.git
-cd NugetCacheMcp
-
-# Build
-dotnet build NuGetCacheMcp.slnx
-
-# Publish executable
-dotnet publish NugetCacheMcp/NuGetCacheMcp.csproj -c Release -r win-x64 -o ./publish/win-x64
-dotnet publish NugetCacheMcp/NuGetCacheMcp.csproj -c Release -r linux-x64 -o ./publish/linux-x64
-```
-
-## Configuration
-
-### Claude Desktop
-
-Add to your Claude Desktop configuration (`claude_desktop_config.json`):
+### .NET Tool Using dnx (no install)
+Requires .NET 10
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "nuget-cache": {
-      "command": "path/to/NuGetCacheMcp.exe",
+      "command": "dnx",
+      "args": ["Maagaard.NuGetCacheMcp", "--yes"],
       "env": {
-        "NUGET_CACHE_PATH": "C:/Users/YourName/.nuget/packages"
+        "NUGET_CACHE_PATH": "C:/custom/nuget/cache" //Optional. Default value: ~/.nuget/packages
+      }
+    }
+  }
+}
+
+```
+### .NET Tool installed locally
+Install as a global .NET tool. Requires .NET 10.
+
+```bash
+dotnet tool install -g Maagaard.NuGetCacheMcp
+```
+
+mcp configuration (e.g. `mcp.json`):
+
+```json
+{
+  "servers": {
+    "nuget-cache": {
+      "command": "nuget-cache-mcp",
+      "env": {
+        "NUGET_CACHE_PATH": "C:/custom/nuget/cache" //Optional. Default value: ~/.nuget/packages
+      }
+    }
+  }
+}
+```
+
+### .NET Local executable
+Requires .NET 10
+
+Download the latest release from the [Releases](https://github.com/SorenMaagaard/NugetCacheMcp/releases) page:
+- `NuGetCacheMcp.exe` - Windows x64
+- `NuGetCacheMcp` - Linux x64
+
+mcp configuration (e.g. `mcp.json`):
+
+```json
+{
+  "servers": {
+    "nuget-cache": {
+      "command": "C:/path/to/NuGetCacheMcp.exe",
+      "env": {
+        "NUGET_CACHE_PATH": "C:/custom/nuget/cache" //Optional. Default value: ~/.nuget/packages
       }
     }
   }
@@ -61,23 +79,54 @@ Add to your Claude Desktop configuration (`claude_desktop_config.json`):
 ```
 
 ### Docker
+If you dont trust this random mcp server (and you probably shouldn't!) you can run it in docker and prevent network access.
+
+> **Note:** When running Docker in WSL with volume mounts to the Windows filesystem, performance may be significantly slower due to cross-filesystem access. The initial traversing of the nuget cache can take minutes. For best performance, consider using the .NET tool or executable directly.
+
+mcp configuration (e.g. `mcp.json`):
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "nuget-cache": {
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-v", "/path/to/.nuget/packages:/nuget-cache:ro",
+        "~/.nuget/packages:/nuget-cache",
         "ghcr.io/sorenmaagaard/nugetcachemcp:latest"
-      ]
+      ],
+      "env": {
+        "NUGET_CACHE_PATH": "/nuget-cache"
+      }
+    }
+  }
+}
+```
+### Using Claude code?
+
+All the following examples above are for `mcp.json`. For claude code mcp configuration (e.g. `~/.claude.json`) the mcp server should be put into the `mcpServers` section instead of `servers` e.g. 
+```json
+{
+  "mcpServers": {
+    "nuget-cache": {
+      ...
     }
   }
 }
 ```
 
-### Environment Variables
+### Build from Source
+
+Requires .NET 10 SDK.
+
+```bash
+git clone https://github.com/SorenMaagaard/NugetCacheMcp.git
+cd NugetCacheMcp
+dotnet build NuGetCacheMcp.slnx
+dotnet publish NugetCacheMcp/NuGetCacheMcp.csproj -c Release -r win-x64 -o ./publish/win-x64
+```
+
+## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|

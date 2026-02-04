@@ -8,12 +8,13 @@ using NuGetCacheMcp.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Configure logging
+// Configure logging - only warnings and errors to avoid MCP client treating info as warnings
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
 {
-    options.LogToStandardErrorThreshold = LogLevel.Trace;
+    options.LogToStandardErrorThreshold = LogLevel.Warning;
 });
+builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
 // Configure options
 builder.Services.Configure<CacheOptions>(options =>
